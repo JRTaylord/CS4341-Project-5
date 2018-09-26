@@ -3,10 +3,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Main {
-	public static void parseItemOrBag(HashMap<String, Integer> map, String rawLine ) {
+	public static void parseItem(HashMap<String, Integer> map, String rawLine ) {
 		String [] words = rawLine.split("\\s+");
 		map.put(words[0], Integer.parseInt(words[1]));
 	}
+
+    public static void parseBag(HashMap<String, Bag> map, String rawLine ) {
+        String [] words = rawLine.split("\\s+");
+        map.put(words[0], new Bag(Integer.parseInt(words[1])));
+    }
 
     public static void main(String [ ] args){
         if(args.length < 2){
@@ -30,7 +35,7 @@ public class Main {
         }
 
         HashMap<String, Integer> items = new HashMap<>();
-        HashMap<String, Integer> bags = new HashMap<>();
+        HashMap<String, Bag> bags = new HashMap<>();
         int minItems;
         int maxItems;
         ArrayList<Unary> unaries = new ArrayList<>();
@@ -44,10 +49,10 @@ public class Main {
             } else{
                 switch (i){
                     case 1:
-                        Main.parseItemOrBag(items, line);
+                        Main.parseItem(items, line);
                         break;
                     case 2:
-                        Main.parseItemOrBag(bags, line);
+                        Main.parseBag(bags, line);
                         break;
                     case 3:
                         String [] words = line.split("\\s+");
