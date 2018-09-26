@@ -27,7 +27,7 @@ public class Main {
         	    if (result == null) {
         	    	removeItem(item, bag);
         	    }else {
-        	    	return results;
+        	    	return result;
         	    }
         }
     
