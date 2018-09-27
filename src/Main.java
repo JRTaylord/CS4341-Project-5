@@ -10,7 +10,7 @@ public class Main {
 
     public static void parseBag(HashMap<String, Bag> map, String rawLine ) {
         String [] words = rawLine.split("\\s+");
-        map.put(words[0], new Bag(Integer.parseInt(words[1])));
+        map.put(words[0], new Bag(Integer.parseInt(words[1]), words[0]));
     }
 
     public static void main(String [] args){
@@ -86,7 +86,7 @@ public class Main {
     	return bags;
     }
     String item = items.next();
-    for (Bag bag: bags.keys()) {
+    for (String bag: bags.keySet()) {
         if (meetsConstraints(bag, item, constraints)) {
         	HashMap<String,Bag> result = backTrack(deepCopy(items), bags);
         	    if (result == null) {
@@ -95,7 +95,6 @@ public class Main {
         	    	return result;
         	    }
         }
-    
     }
     return null;
     }
