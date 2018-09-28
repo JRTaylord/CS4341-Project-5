@@ -88,10 +88,10 @@ public class Main {
     String item = items.keySet().iterator().next();
     Integer weight = items.remove(item);
     for (String bag: bags.keySet()) {
-        if (meetsConstraints(bag, item, weight, constraint, items.keySet())) {
+        if (meetsConstraints(bag, item, weight, constraints, items.keySet())) {
         	HashMap<String,Bag> result = backTrack(new HashMap <String, Integer>(items), bags, constraints);
         	    if (result == null) {
-        	    	removeItem(item, bag);
+        	    	bags.get(bag).items.remove(item);
         	    }else {
         	    	return result;
         	    }
