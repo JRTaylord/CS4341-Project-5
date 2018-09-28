@@ -60,10 +60,10 @@ public class Main {
                         maxItems = Integer.parseInt(words[1]);
                         break;
                     case 4:
-                        unaries.add(new Unary(line, true));
+                        unaries.add(new Unary(line, true, bags));
                         break;
                     case 5:
-                        unaries.add(new Unary(line, false));
+                        unaries.add(new Unary(line, false, bags));
                         break;
                     case 6:
                         binaries.add(new Binary(line, true));
@@ -72,7 +72,7 @@ public class Main {
                         binaries.add(new Binary(line, false));
                         break;
                     case 8:
-                        mutuals.add(new Mutual(line));
+                        mutuals.add(new Mutual(line, bags));
                         break;
                     default:
                         System.out.println("Error index out of bounds: "+i);
@@ -85,10 +85,11 @@ public class Main {
     if (items.isEmpty()) {
     	return bags;
     }
-    String item = items.next();
+    String item = items.keySet().iterator().next();
+    Integer weight = items.remove(item);
     for (String bag: bags.keySet()) {
-        if (meetsConstraints(bag, item, constraints)) {
-        	HashMap<String,Bag> result = backTrack(deepCopy(items), bags);
+        if (meetsConstraints(bag, item, weight, constraint, items.keySet())) {
+        	HashMap<String,Bag> result = backTrack(new HashMap <String, Integer>(items), bags, constraints);
         	    if (result == null) {
         	    	removeItem(item, bag);
         	    }else {
