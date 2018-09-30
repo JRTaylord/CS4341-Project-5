@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Main {
 	public static void parseItem(HashMap<String, Integer> map, String rawLine) {
@@ -36,8 +37,8 @@ public class Main {
 
 		HashMap<String, Integer> items = new HashMap<>();
 		HashMap<String, Bag> bags = new HashMap<>();
-		int minItems;
-		int maxItems;
+		int minItems = 0;
+		int maxItems = 0;
 		ArrayList<Constraint> constraints = new ArrayList<>();
 
 		int i = 0;
@@ -96,7 +97,7 @@ public class Main {
 		String item = items.keySet().iterator().next();
 		Integer weight = items.remove(item);
 		for (String bag : bags.keySet()) {
-			if (meetsConstraints(bag, item, weight, constraints, items.keySet())) {
+			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet())) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
 				if (result == null) {
@@ -131,7 +132,7 @@ public class Main {
 		String item = getMRV(items, constraints, bags, maxItems);
 		Integer weight = items.remove(item);
 		for (String bag : orderLCV(bags, item, items, maxItems)) {
-			if (meetsConstraints(bag, item, weight, constraints, items.keySet())) {
+			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet())) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
 				if (result == null) {
@@ -149,9 +150,11 @@ public class Main {
 		for (Bag bOuter : bags.values()) {
 			int bagCount = 0;
 			constraintCounts.put(item, getConstraintCount(constraints, item));
-			for (Bag bInner : bags.values()) {
-				if (b.canContain(item, items.get(item), constraints, items.keySet(), maxItems)) {
-					bagCount++;
+
+			for (Bag b: bags.values()) {
+			    b.addItem(item, items.get(item));
+				if(meetsConstraints(b, item, items.get(item), constraints, items.keySet())) {
+					bagCount ++;
 				}
 
 			}
@@ -167,9 +170,10 @@ public class Main {
 		for (String item : items.keySet()) {
 			int bagCount = 0;
 			constraintCounts.put(item, getConstraintCount(constraints, item));
-			for (Bag b : bags.values()) {
-				if (b.canContain(item, items.get(item), constraints, items.keySet(), maxItems)) {
-					bagCount++;
+			for (Bag b: bags.values()) {
+			    b.addItem(item, items.get(item));
+				if(meetsConstraints(b, item, items.get(item), constraints, items.keySet())) {
+					bagCount ++;
 				}
 
 			}
@@ -215,4 +219,21 @@ public class Main {
 		return count;
 
 	}
+
+    private static boolean meetsConstraints(Bag bag, String item, Integer weight, ArrayList<Constraint> constraints, Set<String> Items) {
+        // Checks the validity of adding an item to the list
+        boolean valid = bag.fits(weight);
+        if (valid) {
+            bag.addItem(item, weight);
+            for (Constraint constraint :
+                    constraints) {
+                boolean constValid = constraint.isValid(item, bag, Items);
+                if(!constValid){
+                    bag.items.remove(item);
+                    return false;
+                }
+            }
+        }
+        return valid;
+    }
 }
