@@ -117,4 +117,56 @@ public class Main {
 		}
 		return true;
 	}
+	
+	public static HashMap<String, Bag> backTrackHeuristics(HashMap<String, Integer> items, HashMap<String, Bag> bags,
+			ArrayList<Constraint> constraints, int maxItems, int minItems) {
+		if (items.isEmpty()) {
+			if (checkBagMinSize(bags, minItems)) {
+				return bags;			
+				}else {
+					return null;
+				}
+		}
+		
+		String item = getMRV (items, constraints, bags, maxItems);
+		Integer weight = items.remove(item);
+		for (String bag : bags.keySet()) {
+			if (meetsConstraints(bag, item, weight, constraints, items.keySet())) {
+				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
+						maxItems, minItems);
+				if (result == null) {
+					bags.get(bag).items.remove(item);
+				} else {
+					return result;
+				}
+			}
+		}
+		return null;
+	}
+
+	private static String getMRV(HashMap<String, Integer> items, ArrayList<Constraint> constraints,
+			HashMap<String, Bag> bags, int maxItems) {
+		for (String item: items.keySet()) {
+			int bagCount = 0;
+			int constraintCount = getConstraintCount(constraints, item);
+			for (Bag b: bags.values()) {
+				if(b.canContain(item, items.get(item), constraints, items.keySet(), maxItems)) {
+					bagCount ++;
+				}
+			}
+			constraintCount = getConstraintCount(constraints, item);
+		}
+		return null;
+	}
+
+	private static int getConstraintCount(ArrayList<Constraint> constraints, String item) {
+		int count = 0;
+		for (Constraint c: constraints) {
+			if (c.hasItem(item)) {
+				count ++;
+			}
+		}
+		return count;
+		
+	}
 }

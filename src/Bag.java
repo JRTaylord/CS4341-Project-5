@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Bag {
     int size;
@@ -33,5 +35,26 @@ public class Bag {
 		System.out.println("wasted capacity: "+ (size-sum));
 		System.out.println("");
 	}
+
+	public boolean canContain(String item, Integer itemVal, ArrayList<Constraint> constraints, Set<String> items, int maxItems) {
+		int sum = 0;
+		for (Integer val: this.items.values()) {
+			sum+= val;
+		}
+		if (itemVal+ sum > size) {
+			return false;
+		}
+		if (this.items.size() +1 > maxItems) {
+			return false;
+		}
+		for (Constraint c: constraints) {
+			if (!c.isValid(item, this, items)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
     
 }

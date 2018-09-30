@@ -23,4 +23,7 @@ public class Unary extends Constraint{
 		}
 		return bags.contains(bag);
 	}
+	public boolean hasItem(String item) {
+		return this.item.equals(item);
+	}
 }

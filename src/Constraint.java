@@ -7,5 +7,6 @@ public abstract class Constraint {
 	}
 	
 	public abstract boolean isValid(String item, Bag bag, Set<String> items);
+	public abstract boolean hasItem(String item) ;
 
 }

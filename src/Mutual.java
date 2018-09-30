@@ -30,4 +30,10 @@ public class Mutual extends Constraint {
 		
 		return true;
 	}
+
+	@Override
+	public boolean hasItem(String item) {
+		this.items.contains(item);
+		return false;
+	}
 }

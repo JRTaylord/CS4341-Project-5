@@ -26,4 +26,10 @@ public class Binary extends Constraint {
 			return !s.containsAll(this.items); //false if the bag contains all of a type
 		}
 	}
+
+	@Override
+	public boolean hasItem(String item) {
+		// TODO Auto-generated method stub
+		return items.contains(item);
+	}
 }
