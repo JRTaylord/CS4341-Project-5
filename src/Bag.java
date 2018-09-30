@@ -7,23 +7,35 @@ public class Bag {
     HashMap<String, Integer> items;
     String name;
 
-    public Bag(int size, String name){
+    public Bag(int size, String name) {
         this.size = size;
         this.name = name;
         items = new HashMap<>();
     }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object arg0) {
-		if (arg0 instanceof Bag) {
-			return name.equals(((Bag)arg0).name);
-		}
-		return false;
-	}
-	
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object arg0) {
+        if (arg0 instanceof Bag) {
+            return name.equals(((Bag) arg0).name);
+        }
+        return false;
+    }
+
+    public void addItem(String newItemName, int newItemSize) {
+        this.items.put(newItemName, newItemSize);
+    }
+
+    public boolean fits(int newItem) {
+        int remSize = this.size;
+        for (Integer item :
+                this.items.values()) {
+            remSize -= item.intValue();
+        }
+        return remSize >= newItem;
+    }
 	public void print() {
 		int sum = 0;
 		for (Integer val: items.values()) {
@@ -35,26 +47,4 @@ public class Bag {
 		System.out.println("wasted capacity: "+ (size-sum));
 		System.out.println("");
 	}
-
-	public boolean canContain(String item, Integer itemVal, ArrayList<Constraint> constraints, Set<String> items, int maxItems) {
-		int sum = 0;
-		for (Integer val: this.items.values()) {
-			sum+= val;
-		}
-		if (itemVal+ sum > size) {
-			return false;
-		}
-		if (this.items.size() +1 > maxItems) {
-			return false;
-		}
-		for (Constraint c: constraints) {
-			if (!c.isValid(item, this, items)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-
-    
 }

@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Main {
 	public static void parseItem(HashMap<String, Integer> map, String rawLine) {
@@ -169,4 +170,17 @@ public class Main {
 		return count;
 		
 	}
+
+    private static boolean meetsConstraints(Bag bag, String item, Integer weight, ArrayList<Constraint> constraints, Set<String> Items) {
+        // Checks the validity of adding an item to the list
+        boolean valid = bag.fits(weight);
+        if (valid) {
+            bag.addItem(item, weight);
+            for (Constraint constraint :
+                    constraints) {
+                valid = constraint.isValid(item, bag, Items) && valid;
+            }
+        }
+        return valid;
+    }
 }
