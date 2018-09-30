@@ -37,8 +37,8 @@ public class Main {
 
 		HashMap<String, Integer> items = new HashMap<>();
 		HashMap<String, Bag> bags = new HashMap<>();
-		int minItems;
-		int maxItems;
+		int minItems = 0;
+		int maxItems = 0;
 		ArrayList<Constraint> constraints = new ArrayList<>();
 
 		int i = 0;
@@ -97,7 +97,7 @@ public class Main {
 		String item = items.keySet().iterator().next();
 		Integer weight = items.remove(item);
 		for (String bag : bags.keySet()) {
-			if (meetsConstraints(bag, item, weight, constraints, items.keySet())) {
+			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet())) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
 				if (result == null) {
@@ -132,7 +132,7 @@ public class Main {
 		String item = getMRV (items, constraints, bags, maxItems);
 		Integer weight = items.remove(item);
 		for (String bag : bags.keySet()) {
-			if (meetsConstraints(bag, item, weight, constraints, items.keySet())) {
+			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet())) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
 				if (result == null) {
@@ -151,7 +151,8 @@ public class Main {
 			int bagCount = 0;
 			int constraintCount = getConstraintCount(constraints, item);
 			for (Bag b: bags.values()) {
-				if(b.canContain(item, items.get(item), constraints, items.keySet(), maxItems)) {
+			    b.addItem(item, items.get(item));
+				if(meetsConstraints(b, item, items.get(item), constraints, items.keySet())) {
 					bagCount ++;
 				}
 			}
@@ -178,7 +179,11 @@ public class Main {
             bag.addItem(item, weight);
             for (Constraint constraint :
                     constraints) {
-                valid = constraint.isValid(item, bag, Items) && valid;
+                boolean constValid = constraint.isValid(item, bag, Items);
+                if(!constValid){
+                    bag.items.remove(item);
+                    return false;
+                }
             }
         }
         return valid;
