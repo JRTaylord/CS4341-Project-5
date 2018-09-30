@@ -38,9 +38,7 @@ public class Main {
         HashMap<String, Bag> bags = new HashMap<>();
         int minItems;
         int maxItems;
-        ArrayList<Unary> unaries = new ArrayList<>();
-        ArrayList<Binary> binaries = new ArrayList<>();
-        ArrayList<Mutual> mutuals = new ArrayList<>();
+        ArrayList<Constraint> constraints = new ArrayList<>();
 
         int i = 0;
         for (String line : list) {
@@ -60,25 +58,30 @@ public class Main {
                         maxItems = Integer.parseInt(words[1]);
                         break;
                     case 4:
-                        unaries.add(new Unary(line, true, bags));
+                        constraints.add(new Unary(line, true, bags));
                         break;
                     case 5:
-                        unaries.add(new Unary(line, false, bags));
+                        constraints.add(new Unary(line, false, bags));
                         break;
                     case 6:
-                        binaries.add(new Binary(line, true));
+                        constraints.add(new Binary(line, true));
                         break;
                     case 7:
-                        binaries.add(new Binary(line, false));
+                        constraints.add(new Binary(line, false));
                         break;
                     case 8:
-                        mutuals.add(new Mutual(line, bags));
+                        constraints.add(new Mutual(line, bags));
                         break;
                     default:
                         System.out.println("Error index out of bounds: "+i);
                 }
             }
         }
+        bags = Main.backTrack(items, bags, constraints);
+        for (Bag b: bags.values()) {
+        	b.print();
+        }
+        
     }
     
     public static HashMap<String,Bag> backTrack(HashMap<String, Integer>items, HashMap<String, Bag> bags, ArrayList<Constraint> constraints) {

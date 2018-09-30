@@ -21,5 +21,17 @@ public class Bag {
 		}
 		return false;
 	}
+	
+	public void print() {
+		int sum = 0;
+		for (Integer val: items.values()) {
+			sum+= val;
+		}
+		System.out.println(name + ' '+ items.keySet().toString());
+		System.out.println("number of items: "+items.size());
+		System.out.println("total weight: " + sum + "/"+size);
+		System.out.println("wasted capacity: "+ (size-sum));
+		System.out.println("");
+	}
     
 }
