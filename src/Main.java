@@ -88,10 +88,10 @@ public class Main {
 			ArrayList<Constraint> constraints, int maxItems, int minItems) {
 		if (items.isEmpty()) {
 			if (checkBagMinSize(bags, minItems)) {
-				return bags;			
-				}else {
-					return null;
-				}
+				return bags;
+			} else {
+				return null;
+			}
 		}
 		String item = items.keySet().iterator().next();
 		Integer weight = items.remove(item);
@@ -117,20 +117,20 @@ public class Main {
 		}
 		return true;
 	}
-	
+
 	public static HashMap<String, Bag> backTrackHeuristics(HashMap<String, Integer> items, HashMap<String, Bag> bags,
 			ArrayList<Constraint> constraints, int maxItems, int minItems) {
 		if (items.isEmpty()) {
 			if (checkBagMinSize(bags, minItems)) {
-				return bags;			
-				}else {
-					return null;
-				}
+				return bags;
+			} else {
+				return null;
+			}
 		}
-		
-		String item = getMRV (items, constraints, bags, maxItems);
+
+		String item = getMRV(items, constraints, bags, maxItems);
 		Integer weight = items.remove(item);
-		for (String bag : bags.keySet()) {
+		for (String bag : orderLCV(bags, item, items, maxItems)) {
 			if (meetsConstraints(bag, item, weight, constraints, items.keySet())) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
@@ -144,29 +144,75 @@ public class Main {
 		return null;
 	}
 
-	private static String getMRV(HashMap<String, Integer> items, ArrayList<Constraint> constraints,
-			HashMap<String, Bag> bags, int maxItems) {
-		for (String item: items.keySet()) {
+	private static ArrayList<String> orderLCV(HashMap<String, Bag> bags, String item, HashMap<String, Integer> items,
+			int maxItems) {
+		for (Bag bOuter : bags.values()) {
 			int bagCount = 0;
-			int constraintCount = getConstraintCount(constraints, item);
-			for (Bag b: bags.values()) {
-				if(b.canContain(item, items.get(item), constraints, items.keySet(), maxItems)) {
-					bagCount ++;
+			constraintCounts.put(item, getConstraintCount(constraints, item));
+			for (Bag bInner : bags.values()) {
+				if (b.canContain(item, items.get(item), constraints, items.keySet(), maxItems)) {
+					bagCount++;
 				}
+
 			}
-			constraintCount = getConstraintCount(constraints, item);
+			counts.put(item, bagCount);
 		}
 		return null;
 	}
 
+	private static String getMRV(HashMap<String, Integer> items, ArrayList<Constraint> constraints,
+			HashMap<String, Bag> bags, int maxItems) {
+		HashMap<String, Integer> counts = new HashMap<String, Integer>();
+		HashMap<String, Integer> constraintCounts = new HashMap<String, Integer>();
+		for (String item : items.keySet()) {
+			int bagCount = 0;
+			constraintCounts.put(item, getConstraintCount(constraints, item));
+			for (Bag b : bags.values()) {
+				if (b.canContain(item, items.get(item), constraints, items.keySet(), maxItems)) {
+					bagCount++;
+				}
+
+			}
+			counts.put(item, bagCount);
+		}
+		int minCount = Integer.MAX_VALUE;
+		int maxConstraints = -1;
+		boolean sameValue = false;
+		String minCountItem = null;
+		String maxConstraintItem = null;
+		for (String item : counts.keySet()) {
+			if (counts.get(item) < minCount) {
+				minCount = counts.get(item);
+				minCountItem = item;
+				sameValue = false;
+			}
+			if (counts.get(item) == minCount) {
+				sameValue = true;
+			}
+		}
+		if (!sameValue) {// return MRV
+			return minCountItem;
+		}
+		// If no MRV get degree
+		for (String item : counts.keySet()) {
+			if (constraintCounts.get(item) > maxConstraints) {
+				maxConstraints = counts.get(item);
+				maxConstraintItem = item;
+			}
+
+		}
+		return maxConstraintItem;
+
+	}
+
 	private static int getConstraintCount(ArrayList<Constraint> constraints, String item) {
 		int count = 0;
-		for (Constraint c: constraints) {
+		for (Constraint c : constraints) {
 			if (c.hasItem(item)) {
-				count ++;
+				count++;
 			}
 		}
 		return count;
-		
+
 	}
 }
