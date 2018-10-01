@@ -9,11 +9,13 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class Main {
+    // Parses an item row into useful data
 	public static void parseItem(HashMap<String, Integer> map, String rawLine) {
 		String[] words = rawLine.split("\\s+");
 		map.put(words[0], Integer.parseInt(words[1]));
 	}
 
+	// parses a bag row into useful data
 	public static void parseBag(HashMap<String, Bag> map, String rawLine) {
 		String[] words = rawLine.split("\\s+");
 		map.put(words[0], new Bag(Integer.parseInt(words[1]), words[0]));
@@ -128,6 +130,7 @@ public class Main {
 
 	}
 
+	// Basic backtracking
 	public static HashMap<String, Bag> backTrack(HashMap<String, Integer> items, HashMap<String, Bag> bags,
 			ArrayList<Constraint> constraints, int maxItems, int minItems) {
 		if (items.isEmpty()) {
@@ -140,7 +143,6 @@ public class Main {
 		String item = items.keySet().iterator().next();
 		Integer weight = items.remove(item);
 		for (String bag : bags.keySet()) {
-			//System.out.println("CheckDone");
 
 			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
@@ -327,6 +329,7 @@ public class Main {
 
 	}
 
+	// Helper function for other methods on backtracking to check if a state is valid
 	private static boolean meetsConstraints(Bag bag, String item, Integer weight, ArrayList<Constraint> constraints,
 			Set<String> Items, int maxItems) {
 		// Checks the validity of adding an item to the list
