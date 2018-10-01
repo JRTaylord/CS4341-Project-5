@@ -92,6 +92,7 @@ public class Main {
 				b.print();
 			}
 		}
+
 		bags = Main.backTrackHeuristics(items, bags, constraints, maxItems, minItems);
 		if (bags == null) {
 			System.out.println("No solution");
@@ -230,6 +231,11 @@ public class Main {
 		return maxConstraintItem;
 
 	}
+
+	private static HashMap<String, Bag> forwardCheckWrapper(HashMap<String, Integer> items, HashMap<String, Bag> bags,
+                                                     ArrayList<Constraint> constraints, int maxItems, int minItems){
+
+    }
 
 	private static int getConstraintCount(ArrayList<Constraint> constraints, String item) {
 		int count = 0;

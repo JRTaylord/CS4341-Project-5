@@ -34,4 +34,16 @@ public class Binary extends Constraint {
 		// TODO Auto-generated method stub
 		return items.contains(item);
 	}
+
+	@Override
+	public String getType() {
+    	String type = "n";
+    	if(isEqual) type = "e";
+		return "b" + type;
+	}
+
+	@Override
+	public ArrayList<String> getContraints() {
+    	return items;
+	}
 }

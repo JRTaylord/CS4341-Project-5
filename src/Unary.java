@@ -32,4 +32,24 @@ public class Unary extends Constraint {
 	public boolean hasItem(String item) {
 		return this.item.equals(item);
 	}
+
+	@Override
+	public String getType() {
+    	String type = "e";
+    	if(inclusive){
+    		type = "i";
+		}
+		return "u" + type;
+	}
+
+	@Override
+	public ArrayList<String> getContraints() {
+		ArrayList<String> out = new ArrayList<>();
+		out.add(item);
+		for (Bag bag :
+				this.bags) {
+			out.add(bag.name);
+		}
+		return out;
+	}
 }

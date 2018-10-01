@@ -39,4 +39,9 @@ public class Mutual extends Constraint {
 		this.items.contains(item);
 		return false;
 	}
+
+	@Override
+	public String getType() {
+		return "m";
+	}
 }
