@@ -20,11 +20,11 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		if (args.length < 2) {
+		if (args.length < 1) {
 			System.out.println("Not enough inputs");
 			return;
 		}
-		File file = new File(args[1]);
+		File file = new File(args[0]);
 		BufferedReader reader = null;
 		ArrayList<String> list = new ArrayList<>();
 		try {
@@ -84,15 +84,22 @@ public class Main {
 			}
 		}
 		bags = Main.backTrack(items, bags, constraints, maxItems, minItems);
-		System.out.println("BackTrack");
-		for (Bag b : bags.values()) {
-			b.print();
+		if (bags == null) {
+			System.out.println("No solution");
+		} else {
+			System.out.println("BackTrack");
+			for (Bag b : bags.values()) {
+				b.print();
+			}
 		}
-		
 		bags = Main.backTrackHeuristics(items, bags, constraints, maxItems, minItems);
-		System.out.println("Heuristic");
-		for (Bag b : bags.values()) {
-			b.print();
+		if (bags == null) {
+			System.out.println("No solution");
+		} else {
+			System.out.println("Heuristic");
+			for (Bag b : bags.values()) {
+				b.print();
+			}
 		}
 
 	}
@@ -109,7 +116,7 @@ public class Main {
 		String item = items.keySet().iterator().next();
 		Integer weight = items.remove(item);
 		for (String bag : bags.keySet()) {
-			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet())) {
+			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
 				if (result == null) {
@@ -144,7 +151,7 @@ public class Main {
 		String item = getMRV(items, constraints, bags, maxItems);
 		Integer weight = items.remove(item);
 		for (String bag : orderLCV(bags, item, items, maxItems, constraints)) {
-			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet())) {
+			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
 				if (result == null) {
@@ -163,9 +170,9 @@ public class Main {
 		for (Bag bOuter : bags.values()) {
 			int bagCount = 0;
 			bOuter.addItem(item, items.get(item));
-			for (Bag b: bags.values()) {
-				if(meetsConstraints(b, item, items.get(item), constraints, items.keySet())) {
-					bagCount ++;
+			for (Bag b : bags.values()) {
+				if (meetsConstraints(b, item, items.get(item), constraints, items.keySet(), maxItems)) {
+					bagCount++;
 					b.items.remove(item);
 				}
 
@@ -183,9 +190,9 @@ public class Main {
 		for (String item : items.keySet()) {
 			int bagCount = 0;
 			constraintCounts.put(item, getConstraintCount(constraints, item));
-			for (Bag b: bags.values()) {
-				if(meetsConstraints(b, item, items.get(item), constraints, items.keySet())) {
-					bagCount ++;
+			for (Bag b : bags.values()) {
+				if (meetsConstraints(b, item, items.get(item), constraints, items.keySet(), maxItems)) {
+					bagCount++;
 					b.items.remove(item);
 				}
 
@@ -233,20 +240,21 @@ public class Main {
 
 	}
 
-    private static boolean meetsConstraints(Bag bag, String item, Integer weight, ArrayList<Constraint> constraints, Set<String> Items) {
-        // Checks the validity of adding an item to the list
-        boolean valid = bag.fits(weight);
-        if (valid) {
-            bag.addItem(item, weight);
-            for (Constraint constraint :
-                    constraints) {
-                boolean constValid = constraint.isValid(item, bag, Items);
-                if(!constValid){
-                    bag.items.remove(item);
-                    return false;
-                }
-            }
-        }
-        return valid;
-    }
+	private static boolean meetsConstraints(Bag bag, String item, Integer weight, ArrayList<Constraint> constraints,
+			Set<String> Items, int maxItems) {
+		// Checks the validity of adding an item to the list
+		boolean valid = bag.fits(weight);
+		valid = valid && (bag.items.size() <= maxItems);
+		if (valid) {
+			bag.addItem(item, weight);
+			for (Constraint constraint : constraints) {
+				boolean constValid = constraint.isValid(item, bag, Items);
+				if (!constValid) {
+					bag.items.remove(item);
+					return false;
+				}
+			}
+		}
+		return valid;
+	}
 }

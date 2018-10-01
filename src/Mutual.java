@@ -7,6 +7,9 @@ public class Mutual extends Constraint {
     ArrayList<Bag> bags;
     
     public Mutual(String rawLine, HashMap<String, Bag> map) {
+    	bags = new ArrayList<Bag>();
+    	items = new ArrayList<String>();
+
     	String[] words = rawLine.split("\\s+");
     	this.items.add(words[0]);
     	this.items.add(words[1]);

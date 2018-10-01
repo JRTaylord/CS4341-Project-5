@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Binary extends Constraint {
@@ -7,6 +8,7 @@ public class Binary extends Constraint {
     
     public Binary(String rawLine, boolean equals) {
     	this.isEqual = equals;
+    	items = new ArrayList<String>();
     	String[] words = rawLine.split("\\s+");
     	for (int i =0; i < words.length; i++) {
     		this.items.add(words[i]);
@@ -18,7 +20,7 @@ public class Binary extends Constraint {
 		if (!this.items.contains(item)) { //if the item is not relevant return true
 			return true;
 		}
-		Set<String> s = bag.items.keySet();
+		HashSet<String> s = new HashSet<>(bag.items.keySet());
 		if (isEqual) {
 			s.addAll(items);
 			return s.containsAll(this.items); // false if one is in another bag, that is if all items are not in this bag or another bag
