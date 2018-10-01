@@ -48,6 +48,9 @@ public class Main {
 
 		int i = 0;
 		for (String line : list) {
+			if (line.length() < 1) {
+				continue;
+			}
 			if (line.charAt(0) == '#') {
 				i++;
 			} else {
@@ -83,21 +86,41 @@ public class Main {
 				}
 			}
 		}
-		bags = Main.backTrack(items, bags, constraints, maxItems, minItems);
-		if (bags == null) {
+		long start =  System.nanoTime();
+		HashMap<String, Bag> bags2 = Main.backTrack(new HashMap <String, Integer> (items), bags, constraints, maxItems, minItems);
+		long end =  System.nanoTime();
+		System.out.println("Time: "+ (end-start));
+		if (bags2  == null) {
 			System.out.println("No solution");
 		} else {
 			System.out.println("BackTrack");
-			for (Bag b : bags.values()) {
+			for (Bag b : bags2.values()) {
 				b.print();
 			}
 		}
-		bags = Main.backTrackHeuristics(items, bags, constraints, maxItems, minItems);
-		if (bags == null) {
+
+		start = System.nanoTime();
+		bags2 = Main.backTrackHeuristics(new HashMap <String, Integer> (items), bags, constraints, maxItems, minItems);
+		end =  System.nanoTime();
+		System.out.println("Time: "+ (end-start));
+		if (bags2 == null) {
 			System.out.println("No solution");
 		} else {
 			System.out.println("Heuristic");
-			for (Bag b : bags.values()) {
+			for (Bag b : bags2.values()) {
+				b.print();
+			}
+		}
+		
+		start = System.nanoTime();
+		bags2 = Main.backTrackFoward(new HashMap <String, Integer> (items), bags, constraints, maxItems, minItems);
+		end =  System.nanoTime();
+		System.out.println("Time: "+ (end-start));
+		if (bags2 == null) {
+			System.out.println("No solution");
+		} else {
+			System.out.println("Foward Checking");
+			for (Bag b : bags2.values()) {
 				b.print();
 			}
 		}
@@ -116,6 +139,8 @@ public class Main {
 		String item = items.keySet().iterator().next();
 		Integer weight = items.remove(item);
 		for (String bag : bags.keySet()) {
+			System.out.println("CheckDone");
+
 			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
@@ -151,8 +176,37 @@ public class Main {
 		String item = getMRV(items, constraints, bags, maxItems);
 		Integer weight = items.remove(item);
 		for (String bag : orderLCV(bags, item, items, maxItems, constraints, weight)) {
+			System.out.println("CheckDone");
+
 			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
 				HashMap<String, Bag> result = backTrackHeuristics(new HashMap<String, Integer>(items), bags, constraints,
+						maxItems, minItems);
+				if (result == null) {
+					bags.get(bag).items.remove(item);
+				} else {
+					return result;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static HashMap<String, Bag> backTrackFoward(HashMap<String, Integer> items, HashMap<String, Bag> bags,
+			ArrayList<Constraint> constraints, int maxItems, int minItems) {
+		if (items.isEmpty()) {
+			if (checkBagMinSize(bags, minItems)) {
+				return bags;
+			} else {
+				return null;
+			}
+		}
+
+		String item = getMRV(items, constraints, bags, maxItems);
+		Integer weight = items.remove(item);
+		for (String bag : orderForwardCheckLCV(bags, item, items, maxItems, constraints, weight)) {
+			System.out.println("CheckDone");
+			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
+				HashMap<String, Bag> result = backTrackFoward(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
 				if (result == null) {
 					bags.get(bag).items.remove(item);
@@ -171,14 +225,43 @@ public class Main {
 			int bagCount = 0;
 			bOuter.addItem(item, itemWeight);
 			for (Bag b : bags.values()) {
-				if (meetsConstraints(b, item, itemWeight, constraints, items.keySet(), maxItems)) {
-					bagCount++;
-					b.items.remove(item);
+				for (String it: items.keySet()) {
+					if (meetsConstraints(b, it, items.get(it), constraints, items.keySet(), maxItems)) {
+						bagCount++;
+						b.items.remove(it);
+					}
 				}
-
 			}
 			bOuter.items.remove(item);
 			bagList.put(bOuter.name, bagCount);
+			bagCount = 0;
+		}
+		TreeMap<String, Integer> sortedList = new TreeMap<String, Integer>(new ValueCompare(bagList));
+		sortedList.putAll(bagList);
+		return new ArrayList<String>(sortedList.keySet());
+	}
+	
+	private static ArrayList<String> orderForwardCheckLCV(HashMap<String, Bag> bags, String item, HashMap<String, Integer> items, 
+			int maxItems, ArrayList<Constraint> constraints, int itemWeight) {
+		HashMap<String, Integer> bagList = new HashMap<String, Integer>();
+		for (Bag bOuter : bags.values()) {
+			int bagCount = 0;
+			bOuter.addItem(item, itemWeight);
+			for (Bag b : bags.values()) {
+				for (String it: items.keySet()) {
+					if (meetsConstraints(b, it, items.get(it), constraints, items.keySet(), maxItems)) {
+						bagCount++;
+						b.items.remove(it);
+					}
+				}
+			}
+			bOuter.items.remove(item);
+			if (bagCount >= 0) {
+				bagList.put(bOuter.name, bagCount);
+			}else {
+				System.out.println("prunned" + bOuter.name);
+			}
+			bagCount = 0;
 		}
 		TreeMap<String, Integer> sortedList = new TreeMap<String, Integer>(new ValueCompare(bagList));
 		sortedList.putAll(bagList);
