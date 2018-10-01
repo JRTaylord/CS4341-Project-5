@@ -1,7 +1,12 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeMap;
 
 public class Main {
 	public static void parseItem(HashMap<String, Integer> map, String rawLine) {
@@ -79,6 +84,13 @@ public class Main {
 			}
 		}
 		bags = Main.backTrack(items, bags, constraints, maxItems, minItems);
+		System.out.println("BackTrack");
+		for (Bag b : bags.values()) {
+			b.print();
+		}
+		
+		bags = Main.backTrackHeuristics(items, bags, constraints, maxItems, minItems);
+		System.out.println("Heuristic");
 		for (Bag b : bags.values()) {
 			b.print();
 		}
@@ -147,19 +159,21 @@ public class Main {
 
 	private static ArrayList<String> orderLCV(HashMap<String, Bag> bags, String item, HashMap<String, Integer> items,
 			int maxItems, ArrayList<Constraint> constraints) {
-		HashMap<String, Integer> bagList = new HashMap<String, Integer>();
+		TreeMap<Integer, String> bagList = new TreeMap<Integer, String>();
 		for (Bag bOuter : bags.values()) {
 			int bagCount = 0;
+			bOuter.addItem(item, items.get(item));
 			for (Bag b: bags.values()) {
-			    b.addItem(item, items.get(item));
 				if(meetsConstraints(b, item, items.get(item), constraints, items.keySet())) {
 					bagCount ++;
+					b.items.remove(item);
 				}
 
 			}
-			counts.put(item, bagCount);
+			bOuter.items.remove(item);
+			bagList.put(bagCount, bOuter.name);
 		}
-		return null;
+		return new ArrayList<String>(bagList.values());
 	}
 
 	private static String getMRV(HashMap<String, Integer> items, ArrayList<Constraint> constraints,
@@ -170,9 +184,9 @@ public class Main {
 			int bagCount = 0;
 			constraintCounts.put(item, getConstraintCount(constraints, item));
 			for (Bag b: bags.values()) {
-			    b.addItem(item, items.get(item));
 				if(meetsConstraints(b, item, items.get(item), constraints, items.keySet())) {
 					bagCount ++;
+					b.items.remove(item);
 				}
 
 			}
