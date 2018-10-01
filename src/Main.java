@@ -152,7 +152,7 @@ public class Main {
 		Integer weight = items.remove(item);
 		for (String bag : orderLCV(bags, item, items, maxItems, constraints, weight)) {
 			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
-				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
+				HashMap<String, Bag> result = backTrackHeuristics(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
 				if (result == null) {
 					bags.get(bag).items.remove(item);
@@ -166,7 +166,7 @@ public class Main {
 
 	private static ArrayList<String> orderLCV(HashMap<String, Bag> bags, String item, HashMap<String, Integer> items, 
 			int maxItems, ArrayList<Constraint> constraints, int itemWeight) {
-		TreeMap<Integer, String> bagList = new TreeMap<Integer, String>();
+		HashMap<String, Integer> bagList = new HashMap<String, Integer>();
 		for (Bag bOuter : bags.values()) {
 			int bagCount = 0;
 			bOuter.addItem(item, itemWeight);
@@ -178,9 +178,11 @@ public class Main {
 
 			}
 			bOuter.items.remove(item);
-			bagList.put(bagCount, bOuter.name);
+			bagList.put(bOuter.name, bagCount);
 		}
-		return new ArrayList<String>(bagList.values());
+		TreeMap<String, Integer> sortedList = new TreeMap<String, Integer>(new ValueCompare(bagList));
+		sortedList.putAll(bagList);
+		return new ArrayList<String>(sortedList.keySet());
 	}
 
 	private static String getMRV(HashMap<String, Integer> items, ArrayList<Constraint> constraints,
