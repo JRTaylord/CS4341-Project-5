@@ -32,4 +32,6 @@ public class Unary extends Constraint {
 	public boolean hasItem(String item) {
 		return this.item.equals(item);
 	}
+
+
 }

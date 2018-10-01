@@ -34,4 +34,6 @@ public class Binary extends Constraint {
 		// TODO Auto-generated method stub
 		return items.contains(item);
 	}
+
+
 }

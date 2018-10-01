@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Set;
 
 public abstract class Constraint {
@@ -7,6 +8,6 @@ public abstract class Constraint {
 	}
 	
 	public abstract boolean isValid(String item, Bag bag, Set<String> items);
-	public abstract boolean hasItem(String item) ;
+	public abstract boolean hasItem(String item);
 
 }

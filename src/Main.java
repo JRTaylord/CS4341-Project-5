@@ -104,6 +104,7 @@ public class Main {
 		end =  System.nanoTime();
 		System.out.println("Time: "+ (end-start));
 		if (bags2 == null) {
+
 			System.out.println("No solution");
 		} else {
 			System.out.println("Heuristic");
@@ -139,7 +140,7 @@ public class Main {
 		String item = items.keySet().iterator().next();
 		Integer weight = items.remove(item);
 		for (String bag : bags.keySet()) {
-			System.out.println("CheckDone");
+			//System.out.println("CheckDone");
 
 			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
 				HashMap<String, Bag> result = backTrack(new HashMap<String, Integer>(items), bags, constraints,
@@ -176,7 +177,7 @@ public class Main {
 		String item = getMRV(items, constraints, bags, maxItems);
 		Integer weight = items.remove(item);
 		for (String bag : orderLCV(bags, item, items, maxItems, constraints, weight)) {
-			System.out.println("CheckDone");
+			//System.out.println("CheckDone");
 
 			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
 				HashMap<String, Bag> result = backTrackHeuristics(new HashMap<String, Integer>(items), bags, constraints,
@@ -204,7 +205,7 @@ public class Main {
 		String item = getMRV(items, constraints, bags, maxItems);
 		Integer weight = items.remove(item);
 		for (String bag : orderForwardCheckLCV(bags, item, items, maxItems, constraints, weight)) {
-			System.out.println("CheckDone");
+			//System.out.println("CheckDone");
 			if (meetsConstraints(bags.get(bag), item, weight, constraints, items.keySet(), maxItems)) {
 				HashMap<String, Bag> result = backTrackFoward(new HashMap<String, Integer>(items), bags, constraints,
 						maxItems, minItems);
@@ -313,6 +314,7 @@ public class Main {
 		return maxConstraintItem;
 
 	}
+
 
 	private static int getConstraintCount(ArrayList<Constraint> constraints, String item) {
 		int count = 0;
